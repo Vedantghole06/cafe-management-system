@@ -121,7 +121,7 @@
 //         fetchOrders();
 //         fetchMenu();
 
-//         const socket = io("http://localhost:5000", {
+//         const socket = io("https://cafe-backend-opal.vercel.app", {
 //           path: "/socket.io/",
 //           reconnection: true,
 //           reconnectionAttempts: 5,
@@ -574,7 +574,7 @@ const WaiterDashboard = () => {
         fetchOrders()
         fetchMenu()
 
-        const socket = io("http://localhost:5000", {
+        const socket = io("https://cafe-backend-opal.vercel.app", {
           path: "/socket.io/",
           reconnection: true,
           reconnectionAttempts: 5,

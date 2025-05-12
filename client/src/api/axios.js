@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const instance = axios.create({
-  baseURL: "http://localhost:5000", // Backend URL
+  baseURL: "https://cafe-backend-opal.vercel.app", // Backend URL
 });
 
 export default instance;

@@ -82,7 +82,7 @@
 //         }
 //         fetchOrders();
 
-//         const socket = io("http://localhost:5000", {
+//         const socket = io("https://cafe-backend-opal.vercel.app", {
 //           reconnection: true,
 //           reconnectionAttempts: 5,
 //           reconnectionDelay: 1000,
@@ -340,7 +340,7 @@ const KitchenDashboard = () => {
         }
         fetchOrders()
 
-        const socket = io("http://localhost:5000", {
+        const socket = io("https://cafe-backend-opal.vercel.app", {
           reconnection: true,
           reconnectionAttempts: 5,
           reconnectionDelay: 1000,
