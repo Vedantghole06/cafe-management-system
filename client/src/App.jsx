@@ -5,7 +5,7 @@ import WaiterDashboard from "./pages/WaiterDashboard";
 import WaiterDashboardOrders from "./pages/WaiterDashboardOrders";
 import KitchenDashboard from "./pages/KitchenDashboard";
 import ReceptionDashboard from "./pages/ReceptionDashboard";
-import SignIn from "./pages/SignIn";
+import SignIn from "./pages/Signin";
 import SignUp from "./pages/Signup";
 
 const ProtectedRoute = ({ role, children }) => {
