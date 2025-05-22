@@ -1,6 +1,14 @@
 import { QRCodeCanvas } from 'qrcode.react';
 
-const QRCard = ({ qr, editState = {}, onStartEdit, onCancelEdit, onChangeEdit, onSaveEdit }) => {
+const QRCard = ({
+  qr,
+  editState = {},
+  onStartEdit,
+  onCancelEdit,
+  onChangeEdit,
+  onSaveEdit,
+  onDelete
+}) => {
   const isEditing = editState.editing || false;
   const value = editState.value || '';
 
@@ -17,15 +25,15 @@ const QRCard = ({ qr, editState = {}, onStartEdit, onCancelEdit, onChangeEdit, o
               value={value}
               onChange={(e) => onChangeEdit(e.target.value)}
             />
-            <div className="flex justify-between">
+            <div className="flex justify-between gap-2">
               <button
-                className="bg-green-500 text-white px-3 py-1 rounded"
+                className="bg-green-500 text-white px-3 py-1 rounded w-full"
                 onClick={onSaveEdit}
               >
                 Save
               </button>
               <button
-                className="bg-gray-300 px-3 py-1 rounded"
+                className="bg-gray-300 px-3 py-1 rounded w-full"
                 onClick={onCancelEdit}
               >
                 Cancel
@@ -35,12 +43,20 @@ const QRCard = ({ qr, editState = {}, onStartEdit, onCancelEdit, onChangeEdit, o
         ) : (
           <>
             <p className="text-sm text-gray-600 truncate">{qr.value}</p>
-            <button
-              className="mt-2 text-blue-600 underline text-sm"
-              onClick={onStartEdit}
-            >
-              Edit Data
-            </button>
+            <div className="flex justify-between mt-2 gap-2">
+              <button
+                className="text-blue-600 underline text-sm"
+                onClick={onStartEdit}
+              >
+                Edit
+              </button>
+              <button
+                className="text-red-600 underline text-sm"
+                onClick={onDelete}
+              >
+                Delete
+              </button>
+            </div>
           </>
         )}
       </div>

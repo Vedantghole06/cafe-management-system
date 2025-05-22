@@ -7,7 +7,7 @@ function App() {
   const [qrList, setQrList] = useState([]);
   const [id, setId] = useState('');
   const [value, setValue] = useState('');
-  const [editStates, setEditStates] = useState({}); // { table-1: { editing: true, value: "..." } }
+  const [editStates, setEditStates] = useState({});
 
   useEffect(() => {
     const saved = JSON.parse(localStorage.getItem(LOCAL_KEY) || '[]');
@@ -68,6 +68,18 @@ function App() {
     handleCancelEdit(qrId);
   };
 
+  const handleDeleteQR = (qrId) => {
+    const updated = qrList.filter((qr) => qr.id !== qrId);
+    setQrList(updated);
+    saveToLocal(updated);
+
+    setEditStates((prev) => {
+      const newState = { ...prev };
+      delete newState[qrId];
+      return newState;
+    });
+  };
+
   return (
     <div className="min-h-screen bg-gray-100 py-10 px-6">
       <div className="max-w-xl mx-auto bg-white p-6 rounded-xl shadow">
@@ -104,6 +116,7 @@ function App() {
             onCancelEdit={() => handleCancelEdit(qr.id)}
             onChangeEdit={(val) => handleEditChange(qr.id, val)}
             onSaveEdit={() => handleSaveEdit(qr.id)}
+            onDelete={() => handleDeleteQR(qr.id)}
           />
         ))}
       </div>
