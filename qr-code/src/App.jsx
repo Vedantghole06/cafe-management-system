@@ -10,14 +10,14 @@ function App() {
   const [editStates, setEditStates] = useState({});
   const [notification, setNotification] = useState({ show: false, message: '', type: '' });
   const [isLoading, setIsLoading] = useState(true);
+  const [advancedMode, setAdvancedMode] = useState(false);
+  const [customUrl, setCustomUrl] = useState('');
 
   useEffect(() => {
-    // Simulate loading from storage
-    setTimeout(() => {
-      const saved = JSON.parse(localStorage.getItem(LOCAL_KEY) || '[]');
-      setQrList(saved);
-      setIsLoading(false);
-    }, 500);
+    // Load from storage
+    const saved = JSON.parse(localStorage.getItem(LOCAL_KEY) || '[]');
+    setQrList(saved);
+    setIsLoading(false);
   }, []);
 
   const saveToLocal = (data) => {
@@ -37,7 +37,10 @@ function App() {
       return;
     }
 
-    const generatedValue = `${BASE_MENU_URL}?table=${id}`;
+    const generatedValue = advancedMode && customUrl 
+      ? customUrl 
+      : `${BASE_MENU_URL}?table=${id}`;
+      
     const existingIndex = qrList.findIndex((qr) => qr.id === id);
     let updatedList;
 
@@ -54,6 +57,7 @@ function App() {
     setQrList(updatedList);
     saveToLocal(updatedList);
     setId('');
+    if (advancedMode) setCustomUrl('');
   };
 
   const handleStartEdit = (qrId) => {
@@ -107,17 +111,43 @@ function App() {
     showNotification(`QR code for "${qrId}" deleted successfully`, 'info');
   };
 
-  const handleDownloadQR = (qr, qrRef) => {
+  const handleDownloadQR = (qr, qrRef, qrStyle) => {
     if (!qrRef.current) return;
     
     try {
       const canvas = qrRef.current.querySelector('canvas');
-      if (!canvas) return;
+      if (!canvas) {
+        showNotification('Failed to find QR code canvas', 'error');
+        return;
+      }
+      
+      // Create a high-resolution version of the QR code
+      const scale = 4; // Moderate scale factor for clarity without excessive size
+      const tempCanvas = document.createElement('canvas');
+      const ctx = tempCanvas.getContext('2d');
+      
+      // Set canvas size to be larger for better resolution
+      const size = canvas.width;
+      tempCanvas.width = size * scale;
+      tempCanvas.height = size * scale;
+      
+      // Critical: Disable image smoothing for sharp QR code edges
+      ctx.imageSmoothingEnabled = false;
+      
+      // Fill with background color
+      ctx.fillStyle = qrStyle.bgColor;
+      ctx.fillRect(0, 0, tempCanvas.width, tempCanvas.height);
+      
+      // Draw the QR code scaled up for higher resolution
+      ctx.drawImage(canvas, 0, 0, tempCanvas.width, tempCanvas.height);
+      
+      // Get the high-resolution image data with maximum quality
+      const dataUrl = tempCanvas.toDataURL('image/png', 1.0);
       
       // Create a temporary link element
       const link = document.createElement('a');
       link.download = `qr-code-${qr.id}.png`;
-      link.href = canvas.toDataURL('image/png');
+      link.href = dataUrl;
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
@@ -157,22 +187,47 @@ function App() {
 
         {/* QR Generator */}
         <div className="bg-gray-800 rounded-lg p-6 mb-10 border border-gray-700">
-          <h2 className="text-xl font-medium text-gray-200 mb-4">Generate New QR Code</h2>
-          <div className="flex flex-col sm:flex-row gap-3">
-            <input
-              type="text"
-              placeholder="Enter Table ID (e.g., table-1)"
-              value={id}
-              onChange={(e) => setId(e.target.value)}
-              onKeyPress={handleKeyPress}
-              className="flex-1 p-3 bg-gray-900 border border-gray-700 rounded-md focus:outline-none focus:ring-1 focus:ring-teal-500 focus:border-teal-500 text-gray-200"
-            />
-            <button
-              onClick={handleGenerate}
-              className="bg-teal-500 hover:bg-teal-600 text-gray-900 px-6 py-3 rounded-md transition-colors duration-200 font-medium whitespace-nowrap"
+          <div className="flex justify-between items-center mb-4">
+            <h2 className="text-xl font-medium text-gray-200">Generate New QR Code</h2>
+            <button 
+              onClick={() => setAdvancedMode(!advancedMode)}
+              className="text-teal-400 text-sm hover:text-teal-300 transition-colors duration-200"
             >
-              {qrList.some((qr) => qr.id === id) ? 'Update QR' : 'Generate QR'}
+              {advancedMode ? 'Simple Mode' : 'Advanced Mode'}
             </button>
+          </div>
+          
+          <div className="space-y-3">
+            <div className="flex flex-col sm:flex-row gap-3">
+              <input
+                type="text"
+                placeholder="Enter Table ID (e.g., table-1)"
+                value={id}
+                onChange={(e) => setId(e.target.value)}
+                onKeyPress={handleKeyPress}
+                className="flex-1 p-3 bg-gray-900 border border-gray-700 rounded-md focus:outline-none focus:ring-1 focus:ring-teal-500 focus:border-teal-500 text-gray-200"
+              />
+              
+              <button
+                onClick={handleGenerate}
+                className="bg-teal-500 hover:bg-teal-600 text-gray-900 px-6 py-3 rounded-md transition-colors duration-200 font-medium whitespace-nowrap"
+              >
+                {qrList.some((qr) => qr.id === id) ? 'Update QR' : 'Generate QR'}
+              </button>
+            </div>
+            
+            {advancedMode && (
+              <div className="pt-2">
+                <label className="block text-sm text-gray-400 mb-2">Custom URL (optional)</label>
+                <input
+                  type="text"
+                  placeholder="https://example.com/your-custom-url"
+                  value={customUrl}
+                  onChange={(e) => setCustomUrl(e.target.value)}
+                  className="w-full p-3 bg-gray-900 border border-gray-700 rounded-md focus:outline-none focus:ring-1 focus:ring-teal-500 focus:border-teal-500 text-gray-200"
+                />
+              </div>
+            )}
           </div>
         </div>
 
