@@ -1,4 +1,5 @@
 import { QRCodeCanvas } from 'qrcode.react';
+import { useRef } from 'react';
 
 const QRCard = ({
   qr,
@@ -7,58 +8,90 @@ const QRCard = ({
   onCancelEdit,
   onChangeEdit,
   onSaveEdit,
-  onDelete
+  onDelete,
+  onDownload
 }) => {
   const isEditing = editState.editing || false;
   const value = editState.value || '';
+  const qrRef = useRef(null);
 
   return (
-    <div className="bg-white p-4 rounded-xl shadow w-full sm:w-auto">
-      <h3 className="font-bold text-lg mb-2 text-center">{qr.id}</h3>
-      <QRCodeCanvas value={qr.value} size={128} className="mx-auto" />
-      <div className="mt-4">
-        {isEditing ? (
-          <>
-            <input
-              type="text"
-              className="w-full p-2 border rounded mb-2"
-              value={value}
-              onChange={(e) => onChangeEdit(e.target.value)}
+    <div className="bg-gray-800 rounded-lg overflow-hidden border border-gray-700 transition-all duration-300 hover:border-teal-500">
+      <div className="p-4 border-b border-gray-700">
+        <h3 className="font-medium text-gray-200">{qr.id}</h3>
+      </div>
+      
+      <div className="p-5">
+        <div className="flex flex-col items-center">
+          {/* QR Code */}
+          <div className="bg-white p-3 rounded-md mb-5" ref={qrRef}>
+            <QRCodeCanvas 
+              value={qr.value} 
+              size={150} 
+              bgColor={"#ffffff"}
+              fgColor={"#000000"}
+              level={"H"}
+              includeMargin={false}
             />
-            <div className="flex justify-between gap-2">
-              <button
-                className="bg-green-500 text-white px-3 py-1 rounded w-full"
-                onClick={onSaveEdit}
-              >
-                Save
-              </button>
-              <button
-                className="bg-gray-300 px-3 py-1 rounded w-full"
-                onClick={onCancelEdit}
-              >
-                Cancel
-              </button>
-            </div>
-          </>
-        ) : (
-          <>
-            <p className="text-sm text-gray-600 truncate">{qr.value}</p>
-            <div className="flex justify-between mt-2 gap-2">
-              <button
-                className="text-blue-600 underline text-sm"
-                onClick={onStartEdit}
-              >
-                Edit
-              </button>
-              <button
-                className="text-red-600 underline text-sm"
-                onClick={onDelete}
-              >
-                Delete
-              </button>
-            </div>
-          </>
-        )}
+          </div>
+          
+          {/* QR Value or Edit Form */}
+          <div className="w-full">
+            {isEditing ? (
+              <div className="space-y-4">
+                <input
+                  type="text"
+                  className="w-full p-3 bg-gray-900 border border-gray-700 rounded-md focus:outline-none focus:ring-1 focus:ring-teal-500 focus:border-teal-500 text-gray-200"
+                  value={value}
+                  onChange={(e) => onChangeEdit(e.target.value)}
+                  placeholder="Enter QR code value"
+                />
+                <div className="flex justify-between gap-3">
+                  <button
+                    className="bg-teal-500 hover:bg-teal-600 text-gray-900 px-4 py-2 rounded-md transition-colors duration-200 font-medium w-full flex items-center justify-center"
+                    onClick={onSaveEdit}
+                  >
+                    Save
+                  </button>
+                  <button
+                    className="bg-gray-700 hover:bg-gray-600 text-gray-200 px-4 py-2 rounded-md transition-colors duration-200 font-medium w-full flex items-center justify-center"
+                    onClick={onCancelEdit}
+                  >
+                    Cancel
+                  </button>
+                </div>
+              </div>
+            ) : (
+              <div className="space-y-4">
+                <div className="bg-gray-900 p-3 rounded-md border border-gray-700 break-all">
+                  <p className="text-sm text-gray-400">{qr.value}</p>
+                </div>
+                
+                {/* Action Buttons */}
+                <div className="grid grid-cols-3 gap-2">
+                  <button
+                    className="bg-gray-700 hover:bg-gray-600 text-gray-200 px-3 py-2 rounded-md transition-colors duration-200 text-sm flex items-center justify-center"
+                    onClick={() => onDownload(qr, qrRef)}
+                  >
+                    Download
+                  </button>
+                  <button
+                    className="bg-gray-700 hover:bg-gray-600 text-gray-200 px-3 py-2 rounded-md transition-colors duration-200 text-sm flex items-center justify-center"
+                    onClick={onStartEdit}
+                  >
+                    Edit
+                  </button>
+                  <button
+                    className="bg-gray-700 hover:bg-gray-600 text-gray-200 px-3 py-2 rounded-md transition-colors duration-200 text-sm flex items-center justify-center"
+                    onClick={onDelete}
+                  >
+                    Delete
+                  </button>
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
       </div>
     </div>
   );
