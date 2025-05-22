@@ -2,11 +2,11 @@ import { useState, useEffect } from 'react';
 import QRCard from './components/QRCard';
 
 const LOCAL_KEY = 'qr-codes';
+const BASE_MENU_URL = 'https://your-cafe-menu.com/menu'; // Replace with your real menu URL
 
 function App() {
   const [qrList, setQrList] = useState([]);
   const [id, setId] = useState('');
-  const [value, setValue] = useState('');
   const [editStates, setEditStates] = useState({});
 
   useEffect(() => {
@@ -19,22 +19,23 @@ function App() {
   };
 
   const handleGenerate = () => {
-    if (!id || !value) return;
+    if (!id) return;
+
+    const generatedValue = `${BASE_MENU_URL}?table=${id}`;
 
     const existingIndex = qrList.findIndex((qr) => qr.id === id);
     let updatedList;
 
     if (existingIndex >= 0) {
-      qrList[existingIndex].value = value;
+      qrList[existingIndex].value = generatedValue;
       updatedList = [...qrList];
     } else {
-      updatedList = [...qrList, { id, value }];
+      updatedList = [...qrList, { id, value: generatedValue }];
     }
 
     setQrList(updatedList);
     saveToLocal(updatedList);
     setId('');
-    setValue('');
   };
 
   const handleStartEdit = (qrId) => {
@@ -89,13 +90,6 @@ function App() {
           placeholder="Enter Table ID (e.g., table-1)"
           value={id}
           onChange={(e) => setId(e.target.value)}
-          className="w-full p-2 border rounded mb-3"
-        />
-        <input
-          type="text"
-          placeholder="Enter Data/URL (e.g., menu link)"
-          value={value}
-          onChange={(e) => setValue(e.target.value)}
           className="w-full p-2 border rounded mb-3"
         />
         <button

@@ -15,7 +15,7 @@ const QRCard = ({
   return (
     <div className="bg-white p-4 rounded-xl shadow w-full sm:w-auto">
       <h3 className="font-bold text-lg mb-2 text-center">{qr.id}</h3>
-      <QRCodeCanvas value={qr.id} size={128} className="mx-auto" />
+      <QRCodeCanvas value={qr.value} size={128} className="mx-auto" />
       <div className="mt-4">
         {isEditing ? (
           <>
