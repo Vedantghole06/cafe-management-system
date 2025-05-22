@@ -54,7 +54,7 @@ app.use("/api/orders", orderRoutes);
 console.log("Mounted routes: /api/auth, /api/tables, /api/menu, /api/orders");
 
 // Log registered routes
-if (app._router && app._router.stack) {
+if (app.router && app.router.stack) {
   // ...log routes...
 } else {
   console.warn("Unable to log routes: app._router is undefined");
