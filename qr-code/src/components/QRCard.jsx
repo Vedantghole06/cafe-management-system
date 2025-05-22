@@ -1,10 +1,49 @@
 import { QRCodeCanvas } from 'qrcode.react';
 
-const QRCard = ({ title, value }) => {
+const QRCard = ({ qr, editState = {}, onStartEdit, onCancelEdit, onChangeEdit, onSaveEdit }) => {
+  const isEditing = editState.editing || false;
+  const value = editState.value || '';
+
   return (
-    <div className="border p-4 rounded-lg shadow-md w-fit text-center">
-      <h2 className="font-semibold mb-2">{title}</h2>
-      <QRCodeCanvas value={value} size={128} />
+    <div className="bg-white p-4 rounded-xl shadow w-full sm:w-auto">
+      <h3 className="font-bold text-lg mb-2 text-center">{qr.id}</h3>
+      <QRCodeCanvas value={qr.id} size={128} className="mx-auto" />
+      <div className="mt-4">
+        {isEditing ? (
+          <>
+            <input
+              type="text"
+              className="w-full p-2 border rounded mb-2"
+              value={value}
+              onChange={(e) => onChangeEdit(e.target.value)}
+            />
+            <div className="flex justify-between">
+              <button
+                className="bg-green-500 text-white px-3 py-1 rounded"
+                onClick={onSaveEdit}
+              >
+                Save
+              </button>
+              <button
+                className="bg-gray-300 px-3 py-1 rounded"
+                onClick={onCancelEdit}
+              >
+                Cancel
+              </button>
+            </div>
+          </>
+        ) : (
+          <>
+            <p className="text-sm text-gray-600 truncate">{qr.value}</p>
+            <button
+              className="mt-2 text-blue-600 underline text-sm"
+              onClick={onStartEdit}
+            >
+              Edit Data
+            </button>
+          </>
+        )}
+      </div>
     </div>
   );
 };
