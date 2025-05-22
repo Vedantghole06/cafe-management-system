@@ -121,7 +121,7 @@
 //         fetchOrders();
 //         fetchMenu();
 
-//         const socket = io("https://cafe-backend-opal.vercel.app", {
+//         const socket = io("http://localhost:5000", {
 //           path: "/socket.io/",
 //           reconnection: true,
 //           reconnectionAttempts: 5,
@@ -440,8 +440,6 @@
 // export default WaiterDashboard;
 
 
-"use client"
-
 import { useState, useEffect, Component } from "react"
 import { useNavigate } from "react-router-dom"
 import { jwtDecode } from "jwt-decode"
@@ -574,7 +572,7 @@ const WaiterDashboard = () => {
         fetchOrders()
         fetchMenu()
 
-        const socket = io("https://cafe-backend-opal.vercel.app", {
+        const socket = io("http://localhost:5000", {
           path: "/socket.io/",
           reconnection: true,
           reconnectionAttempts: 5,
@@ -910,7 +908,7 @@ const WaiterDashboard = () => {
                             </option>
                           ))}
                         </select>
-                        <div className="absolute inset-y-0 right-0 flex items-center px-2 pointer-events-none text-slate-500">
+                        {/* <div className="absolute inset-y-0 right-0 flex items-center px-2 pointer-events-none text-slate-500">
                           <svg
                             xmlns="http://www.w3.org/2000/svg"
                             className="w-5 h-5"
@@ -920,7 +918,7 @@ const WaiterDashboard = () => {
                           >
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
                           </svg>
-                        </div>
+                        </div> */}
                       </div>
                     </div>
 

@@ -5,6 +5,7 @@ const Order = require("../models/Order");
 const Menu = require("../models/Menu");
 
 router.post("/", auth, async (req, res) => {
+  console.log("Create order request body:", req.body);
   try {
     if (!["waiter", "reception"].includes(req.user.role)) {
       return res.status(403).json({ message: "Unauthorized" });
@@ -47,12 +48,16 @@ router.post("/", auth, async (req, res) => {
     });
     await order.save();
     const io = req.app.get("io");
-    io.emit("orderUpdate", order);
+    if (io) {
+      io.emit("orderUpdate", order);
+    } else {
+      console.warn("Socket.IO instance not found on app");
+    }
     console.log("Order created:", order);
     res.status(201).json(order);
   } catch (err) {
-    console.error("Create order error:", err);
-    res.status(500).json({ message: "Server error" });
+    console.error("Order creation error:", err);
+    res.status(500).json({ message: "Failed to create order", error: err.message });
   }
 });
 
@@ -82,7 +87,11 @@ router.put("/:id/status", auth, async (req, res) => {
       return res.status(404).json({ message: "Order not found" });
     }
     const io = req.app.get("io");
-    io.emit("orderUpdate", order);
+    if (io) {
+      io.emit("orderUpdate", order);
+    } else {
+      console.warn("Socket.IO instance not found on app");
+    }
     console.log("Order status updated:", order);
     res.json(order);
   } catch (err) {

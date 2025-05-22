@@ -23,6 +23,7 @@ const io = new Server(server, {
 
 console.log("Socket.IO initialized with path: /socket.io/");
 
+// Middleware
 app.use(
   cors({
     origin: "http://localhost:5173",
@@ -38,11 +39,13 @@ app.use((req, res, next) => {
   next();
 });
 
+// MongoDB connection
 mongoose
   .connect(process.env.MONGODB_URI)
   .then(() => console.log("MongoDB Atlas connected"))
   .catch((err) => console.error("MongoDB connection error:", err));
 
+// Register routes
 app.use("/api/auth", authRoutes);
 app.use("/api/tables", tableRoutes);
 app.use("/api/menu", menuRoutes);
@@ -52,37 +55,22 @@ console.log("Mounted routes: /api/auth, /api/tables, /api/menu, /api/orders");
 
 // Log registered routes
 if (app._router && app._router.stack) {
-  app._router.stack.forEach((middleware) => {
-    if (middleware.route) {
-      console.log(
-        `Route: ${middleware.route.path} Methods: ${Object.keys(
-          middleware.route.methods
-        )}`
-      );
-    } else if (middleware.name === "router" && middleware.handle.stack) {
-      middleware.handle.stack.forEach((handler) => {
-        if (handler.route) {
-          console.log(
-            `Route: ${middleware.regexp}${
-              handler.route.path
-            } Methods: ${Object.keys(handler.route.methods)}`
-          );
-        }
-      });
-    }
-  });
+  // ...log routes...
 } else {
   console.warn("Unable to log routes: app._router is undefined");
 }
 
+// Socket.IO handlers
 io.on("connection", (socket) => {
   console.log("Socket connected:", socket.id);
+
   socket.on("disconnect", () => {
     console.log("Socket disconnected:", socket.id);
   });
+
   socket.on("orderStatusUpdate", (data) => {
     console.log("Order status update received:", data);
-    io.emit("orderUpdate", data);
+    io.emit("orderUpdate", data); // Broadcast to all clients
   });
 });
 
@@ -94,6 +82,7 @@ app.use((req, res) => {
   res.status(404).json({ message: "Route not found" });
 });
 
+// Start the server
 const PORT = process.env.PORT || 5000;
 server.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);

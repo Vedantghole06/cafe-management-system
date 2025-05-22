@@ -1,6 +1,6 @@
 import axios from "axios";
 const instance = axios.create({
-  baseURL: import.meta.env.VITE_API_URL || "http://:5000",
+  baseURL: import.meta.env.VITE_API_URL || "http://localhost:5000",
 });
 export default instance;
 export const createOrder = async (orderData) => {
